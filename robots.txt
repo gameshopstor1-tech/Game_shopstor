@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://stockshopamirali12-collab.github.io/Game_shopstor1/sitemap.xml

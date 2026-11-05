@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>گیم شاپ استور | Game Shop Stor | خرید اکانت و آیتم بازی</title>
+  <meta name="description" content="گیم شاپ استور (Game Shop Stor)؛ فروشگاه آنلاین خرید اکانت، آیتم و محصولات بازی با امکان مشاهده محصولات بدون ثبت‌نام و ثبت سفارش سریع.">
+  <meta name="keywords" content="گیم شاپ استور, Game Shop Stor, GAME SHOP, خرید اکانت بازی, خرید آیتم بازی, فروش اکانت بازی, CP کالاف, UC, جم بازی">
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow">
+  <link rel="canonical" href="https://stockshopamirali12-collab.github.io/Game_shopstor1/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="گیم شاپ استور | Game Shop Stor">
+  <meta property="og:description" content="فروشگاه آنلاین اکانت، آیتم و محصولات بازی؛ مشاهده محصولات بدون ثبت‌نام و ثبت سفارش سریع.">
+  <meta property="og:url" content="https://stockshopamirali12-collab.github.io/Game_shopstor1/">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- صفحه اصلی سایت (محصولات بدون ثبت‌نام قابل مشاهده هستند) -->
+  <header class="header">
+    <div class="container nav">
+      <a class="logo" href="#home" onclick="showMain()"><span>🎮</span> GAME<span>SHOP</span></a>
+      <nav>
+        <a href="#home" onclick="showMain()">خانه</a>
+        <a href="#products" onclick="showMain()">اکانت‌ها</a>
+        <a href="#categories" onclick="showMain()">بازی‌ها</a>
+        <a href="#about" onclick="showMain()">مزایا</a>
+        <a href="#contact" onclick="showMain()">پشتیبانی</a>
+        <a href="#track" onclick="showTrack()">پیگیری سفارش</a>
+      </nav>
+      <div class="header-actions">
+        <button class="cart-btn" onclick="openCart()">🛒 سبد <b id="cartCount">0</b></button>
+        <button id="authBtn" class="auth-btn" onclick="openAuth()">ورود / ثبت‌نام</button>
+        <button id="ownerPanelBtn" class="owner-btn hidden" onclick="openOwnerPanel()">⚙️ پنل مالک</button>
+        <button id="collabPanelBtn" class="owner-btn hidden" onclick="openCollabPanel()">👥 پنل همکار</button>
+        <button id="logoutBtn" class="logout-btn hidden" onclick="logoutUser()">خروج</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="mainContent">
+    <section id="home" class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">فروشگاه تخصصی گیمینگ</p>
+          <h1>اکانت بازی مورد علاقه‌ات رو <span>اینجا پیدا کن</span> 🎮</h1>
+          <p class="hero-text">اکانت‌ها و آیتم‌های بازی با مشخصات کامل. قیمت هر محصول را از پشتیبانی تلگرام یا روبیکا استعلام بگیر و سریع سفارش بده. محصولات بدون ثبت‌نام قابل مشاهده‌اند.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#products">مشاهده محصولات</a>
+            <a class="btn ghost" href="#contact">پشتیبانی</a>
+          </div>
+          <div class="stats">
+            <div><strong>100+</strong><small>محصول</small></div>
+            <div><strong>24/7</strong><small>پشتیبانی</small></div>
+            <div><strong>تلگرام + روبیکا</strong><small>ارتباط مستقیم</small></div>
+          </div>
+        </div>
+        <div class="hero-card">
+          <div class="glow"></div>
+          <div class="controller">🎮</div>
+          <p>اکانت ویژه امروز</p>
+          <h3>eFootball Premium</h3>
+          <div class="hero-price">💬 قیمت با استعلام</div>
+          <button class="btn primary full" onclick="scrollToProducts()">مشاهده محصول</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="categories" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div><p class="eyebrow">انتخاب بازی</p><h2>دسته‌بندی‌ها</h2></div>
+          <span>محصولاتت را راحت پیدا کن</span>
+        </div>
+        <div class="categories">
+          <button onclick="filterProducts('buyaccount')"><span>🎮</span><b>خرید اکانت بازی</b><small>اکانت‌های آماده</small></button>
+          <button onclick="filterProducts('efootball')"><span>⚽</span><b>eFootball</b><small>سکه و آفر</small></button>
+          <button onclick="filterProducts('cod')"><span>🔫</span><b>Call of Duty</b><small>CP و بتل پس</small></button>
+          <button onclick="filterProducts('freefire')"><span>🔥</span><b>Free Fire</b><small>جم و آیتم</small></button>
+          <button onclick="filterProducts('pubg')"><span>🪖</span><b>PUBG</b><small>UC و آیتم</small></button>
+          <button onclick="filterProducts('clash')"><span>👑</span><b>Clash of Clans</b><small>آفر و جم</small></button>
+          <button onclick="filterProducts('clashroyale')"><span>👑</span><b>Clash Royale</b><small>جم و آفر</small></button>
+          <button onclick="filterProducts('telegram')"><span>✈️</span><b>Telegram</b><small>استارز و پرمیوم</small></button>
+          <button onclick="filterProducts('fcmobile')"><span>⚽</span><b>FC Mobile</b><small>آفر و پس</small></button>
+          <button onclick="filterProducts('roblox')"><span>🎮</span><b>Roblox</b><small>روباکس</small></button>
+          <button onclick="filterProducts('pesarkhande')"><span>👑</span><b>پسرخوانده</b><small>الماس و آفر</small></button>
+          <button onclick="filterProducts('giftcard')"><span>🎁</span><b>گیفت کارت</b><small>استیم و اپل</small></button>
+          <button onclick="filterProducts('brawlstars')"><span>⭐</span><b>Brawl Stars</b><small>جم و پس</small></button>
+          <button onclick="filterProducts('stumbleguys')"><span>🪙</span><b>Stumble Guys</b><small>توکن و جم</small></button>
+          <button onclick="filterProducts('dls')"><span>⚽</span><b>Dream League Soccer</b><small>جم و سکه</small></button>
+          <button onclick="filterProducts('plato')"><span>🎮</span><b>Plato</b><small>آفر و پیپ</small></button>
+          <button onclick="filterProducts('fcpoints')"><span>⚽</span><b>اف سی پوینت</b><small>FC Points</small></button>
+          <button onclick="filterProducts('sitepremium')"><span>⭐</span><b>کاربر ویژه سایت</b><small>اکانت ویژه</small></button>
+          <button onclick="filterProducts('minecraft')"><span>⛏️</span><b>Minecraft</b><small>سکه و باندل</small></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="products" class="section products-section">
+      <div class="container">
+        <div class="section-head">
+          <div><p class="eyebrow">محصولات</p><h2>اکانت‌ها و آیتم‌های موجود</h2></div>
+          <div class="tools">
+            <input id="search" type="search" placeholder="چند حرف از نام بازی یا محصول را بنویس..." oninput="renderProducts()">
+            <select id="sort" onchange="renderProducts()">
+              <option value="default">مرتب‌سازی پیش‌فرض</option>
+            </select>
+          </div>
+        </div>
+        <div id="filterBar" class="filter-bar">
+          <button class="active" onclick="filterProducts('all')">همه</button>
+          <button onclick="filterProducts('buyaccount')">خرید اکانت بازی</button>
+          <button onclick="filterProducts('efootball')">eFootball</button>
+          <button onclick="filterProducts('cod')">Call of Duty</button>
+          <button onclick="filterProducts('freefire')">Free Fire</button>
+          <button onclick="filterProducts('pubg')">PUBG</button>
+          <button onclick="filterProducts('clash')">Clash of Clans</button>
+          <button onclick="filterProducts('clashroyale')">Clash Royale</button>
+          <button onclick="filterProducts('telegram')">Telegram</button>
+          <button onclick="filterProducts('fcmobile')">FC Mobile</button>
+          <button onclick="filterProducts('roblox')">Roblox</button>
+          <button onclick="filterProducts('pesarkhande')">پسرخوانده</button>
+          <button onclick="filterProducts('giftcard')">گیفت کارت</button>
+          <button onclick="filterProducts('brawlstars')">Brawl Stars</button>
+          <button onclick="filterProducts('stumbleguys')">Stumble Guys</button>
+          <button onclick="filterProducts('dls')">Dream League Soccer</button>
+          <button onclick="filterProducts('plato')">Plato</button>
+          <button onclick="filterProducts('fcpoints')">اف سی پوینت</button>
+          <button onclick="filterProducts('sitepremium')">کاربر ویژه سایت</button>
+          <button onclick="filterProducts('minecraft')">Minecraft</button>
+        </div>
+        <div id="productGrid" class="product-grid"></div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="container">
+        <div class="section-head"><div><p class="eyebrow">چرا ما؟</p><h2>خرید راحت و شفاف</h2></div></div>
+        <div class="benefits">
+          <article><span>🔒</span><h3>خرید مطمئن</h3><p>مشخصات محصول قبل از سفارش نمایش داده می‌شود.</p></article>
+          <article><span>⚡</span><h3>تحویل سریع</h3><p>پس از تأیید سفارش، محصول سریع تحویل داده می‌شود.</p></article>
+          <article><span>💬</span><h3>پشتیبانی مستقیم</h3><p>از تلگرام یا روبیکا قیمت بگیر و سفارش بده.</p></article>
+          <article><span>🎯</span><h3>استعلام قیمت</h3><p>قیمت هر محصول را مستقیم از پشتیبانی دریافت کن.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section contact">
+      <div class="container contact-box">
+        <div>
+          <p class="eyebrow">نیاز به کمک داری؟</p>
+          <h2>با پشتیبانی در ارتباط باش</h2>
+          <p>برای استعلام قیمت، موجودی و ثبت سفارش، از طریق تلگرام یا روبیکا با ما در ارتباط باش. قیمت‌ها فقط از پشتیبانی اعلام می‌شود.</p>
+        </div>
+        <div class="contact-actions">
+          <a class="btn primary" href="https://t.me/Amir_Ali_1_8" target="_blank" rel="noopener">✈️ پشتیبانی تلگرام @Amir_Ali_1_8</a>
+          <a class="btn primary" href="https://rubika.ir/Monnomyt" target="_blank" rel="noopener">💬 پشتیبانی روبیکا @Monnomyt</a>
+          <a class="btn ghost" href="https://rubika.ir/game_shopstor" target="_blank" rel="noopener">🛍️ فروشگاه روبیکا</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- صفحه پیگیری سفارش -->
+  <section id="trackPage" class="section track-page hidden">
+    <div class="container">
+      <div class="section-head">
+        <div><p class="eyebrow">پیگیری</p><h2>پیگیری سفارش با کد اختصاصی</h2></div>
+      </div>
+      <div class="track-box">
+        <label for="trackCodeInput">کد اختصاصی سفارش را وارد کنید</label>
+        <input id="trackCodeInput" type="text" placeholder="مثلاً GS-ABC123-X7K2" maxlength="30">
+        <button class="btn primary" onclick="trackOrder()">جستجوی سفارش</button>
+        <div id="trackResult" class="track-result hidden"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- پنل مالک (فقط برای مالک) -->
+  <section id="ownerPanel" class="section owner-panel hidden">
+    <div class="container">
+      <div class="section-head">
+        <div><p class="eyebrow">پنل مدیریت</p><h2>تنظیمات مالک</h2></div>
+        <button class="btn ghost" onclick="showMain()">بازگشت به سایت</button>
+      </div>
+      <div class="owner-tabs">
+        <button class="active" onclick="showOwnerTab('users')">کاربران ثبت‌نام‌شده</button>
+        <button onclick="showOwnerTab('orders')">سفارش‌ها</button>
+        <button onclick="showOwnerTab('collaborators')">همکاران</button>
+        <button onclick="showOwnerTab('premium')">کاربران ویژه ⭐</button>
+      </div>
+      <div id="ownerUsersTab" class="owner-tab-content">
+        <h3>لیست خلاصه کاربران (برای اعمال محصول)</h3>
+        <div id="ownerUsersList" class="owner-list"></div>
+      </div>
+      <div id="ownerOrdersTab" class="owner-tab-content hidden">
+        <h3>لیست سفارش‌ها با کد اختصاصی</h3>
+        <div id="ownerOrdersList" class="owner-list"></div>
+      </div>
+      <div id="ownerPremiumTab" class="owner-tab-content hidden">
+        <h3>مدیریت کاربران ویژه ⭐</h3>
+        <p class="hint" style="margin-bottom:16px">مالک می‌تواند برای خریداران اکانت ویژه نام کاربری، رمز عبور و مدت اعتبار تعیین کند. اعتبار از لحظه ساخت محاسبه می‌شود.</p>
+        <div class="add-collab-box">
+          <h4>ساخت کاربر ویژه جدید</h4>
+          <label for="premiumName">نام کاربر *</label>
+          <input id="premiumName" type="text" maxlength="60" placeholder="مثلاً علی محمدی">
+          <label for="premiumUsername">نام کاربری *</label>
+          <input id="premiumUsername" type="text" maxlength="40" placeholder="نام کاربری ویژه">
+          <label for="premiumPassword">رمز عبور *</label>
+          <input id="premiumPassword" type="text" maxlength="80" placeholder="رمزی که مالک تعیین می‌کند">
+          <label for="premiumDays">مدت اعتبار (روز) *</label>
+          <input id="premiumDays" type="number" min="1" max="3650" placeholder="مثلاً 30">
+          <button class="btn primary" type="button" onclick="addPremiumUser()">➕ ساخت حساب ویژه</button>
+          <p id="premiumAddError" class="login-error"></p>
+        </div>
+        <h4 style="margin-top:24px">لیست کاربران ویژه</h4>
+        <div id="ownerPremiumList" class="owner-list"></div>
+      </div>
+      <div id="ownerCollaboratorsTab" class="owner-tab-content hidden">
+        <h3>مدیریت همکاران</h3>
+        <p class="hint" style="margin-bottom:16px">مالک می‌تواند همکار اضافه کند، لیست را ببیند و همکار را حذف کند. هر همکار با نام کاربری و رمز خود وارد پنل همکار می‌شود. برای ورود همکار از گوشی‌ها و دستگاه‌های مختلف، از دکمه «کپی کد اشتراک» استفاده کنید و کد را برای همکار بفرستید.</p>
+        <div class="add-collab-box">
+          <h4>افزودن همکار جدید</h4>
+          <label for="collabName">نام همکار *</label>
+          <input id="collabName" type="text" maxlength="50" placeholder="مثلاً علی">
+          <label for="collabUsername">نام کاربری *</label>
+          <input id="collabUsername" type="text" maxlength="40" placeholder="نام کاربری برای ورود">
+          <label for="collabPassword">رمز عبور *</label>
+          <input id="collabPassword" type="password" maxlength="40" placeholder="رمز عبور">
+          <label for="collabRubikaId">آیدی روبیکا همکار</label>
+          <input id="collabRubikaId" type="text" maxlength="50" placeholder="مثلاً @username یا شناسه روبیکا">
+          <button class="btn primary" type="button" onclick="addCollaborator()">➕ افزودن همکار</button>
+          <p id="collabAddError" class="login-error"></p>
+        </div>
+        <h4 style="margin-top:24px">لیست همکاران</h4>
+        <div id="ownerCollaboratorsList" class="owner-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- پنل همکار (دسترسی محدود) -->
+  <section id="collabPanel" class="section owner-panel hidden">
+    <div class="container">
+      <div class="section-head">
+        <div><p class="eyebrow">پنل همکار</p><h2>دسترسی همکار</h2></div>
+        <button class="btn ghost" onclick="showMain()">بازگشت به سایت</button>
+      </div>
+      <div class="owner-tabs">
+        <button class="active" onclick="showCollabTab('users')">کاربران ثبت‌نام‌شده</button>
+        <button onclick="showCollabTab('orders')">سفارش‌ها</button>
+      </div>
+      <div id="collabUsersTab" class="owner-tab-content">
+        <h3>لیست کاربران (فقط مشاهده)</h3>
+        <div id="collabUsersList" class="owner-list"></div>
+      </div>
+      <div id="collabOrdersTab" class="owner-tab-content hidden">
+        <h3>لیست سفارش‌ها</h3>
+        <div id="collabOrdersList" class="owner-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer">
+      <div><a class="logo" href="#home" onclick="showMain()">🎮 GAME<span>SHOP</span></a><p>فروشگاه اکانت و آیتم بازی</p></div>
+      <p>© <span id="year"></span> GAME SHOP — تمامی حقوق محفوظ است.</p>
+    </div>
+  </footer>
+
+  <!-- مودال ورود ساده (فقط نام + من ربات نیستم) -->
+  <div id="authModal" class="modal onclick="closeAuth(event)">
+    <div class="modal-card auth-card" onclick="event.stopPropagation()">
+      <div class="login-logo">🎮</div>
+      <p class="eyebrow">ورود به GAME SHOP</p>
+      <h2>ورود یا ثبت‌نام</h2>
+      <p class="login-subtitle">برای ورود یا ساخت حساب، اطلاعات خودت را وارد کن.</p>
+
+      <div class="attention-box">
+        ⚠️ <strong>توجه:</strong> سفارش شما با اسمی که در سایت وارد می‌کنید ثبت می‌شود.
+      </div>
+
+      <label for="loginName">نام شما</label>
+      <input id="loginName" type="text" maxlength="40" autocomplete="off" placeholder="مثلاً علی">
+
+      <label class="checkbox-label">
+        <input type="checkbox" id="notRobot">
+        <span>من ربات نیستم</span>
+      </label>
+
+      <button class="btn primary full" type="button" onclick="loginToShop()">ورود به فروشگاه 🚀</button>
+      <p id="loginError" class="login-error"></p>
+      <p class="switch-auth">حساب نداری؟ <a href="#" onclick="openRegister(); return false;">ثبت‌نام کن</a></p>
+      <p class="owner-login-link"><a href="#" onclick="openPremiumLogin(); return false;">⭐ ورود کاربر ویژه</a></p>
+      <p class="owner-login-link"><a href="#" onclick="openOwnerLogin(); return false;">ورود مالک</a> · <a href="#" onclick="openCollabLogin(); return false;">ورود همکار</a></p>
+    </div>
+  </div>
+
+  <!-- مودال ثبت‌نام کامل (اجباری برای خرید) -->
+  <div id="registerModal" class="modal hidden" onclick="closeRegister(event)">
+    <div class="modal-card auth-card" onclick="event.stopPropagation()">
+      <button class="close" onclick="closeRegister()">×</button>
+      <div class="login-logo">📝</div>
+      <p class="eyebrow">ثبت‌نام کاربر</p>
+      <h2>ثبت‌نام برای خرید</h2>
+      <p class="login-subtitle">برای خرید محصولات ثبت‌نام الزامی است.</p>
+
+      <label for="regFullName">نام و نام خانوادگی *</label>
+      <input id="regFullName" type="text" maxlength="60" placeholder="مثلاً علی محمدی">
+
+      <label for="regContact">آیدی روبیکا یا شماره تلفن *</label>
+      <input id="regContact" type="text" maxlength="80" placeholder="مثلاً @username یا 09xxxxxxxxx">
+
+      <label class="checkbox-label">
+        <input type="checkbox" id="regNotRobot">
+        <span>من ربات نیستم *</span>
+      </label>
+
+      <button class="btn primary full" type="button" onclick="registerUser()">ثبت‌نام و ادامه 🚀</button>
+      <p id="registerError" class="login-error"></p>
+      <p class="switch-auth">قبلاً وارد شده‌ای؟ <a href="#" onclick="openAuth(); return false;">ورود</a></p>
+    </div>
+  </div>
+
+  <!-- مودال ورود کاربر ویژه -->
+  <div id="premiumLoginModal" class="modal hidden" onclick="closePremiumLogin(event)">
+    <div class="modal-card auth-card" onclick="event.stopPropagation()">
+      <button class="close" onclick="closePremiumLogin()">×</button>
+      <div class="login-logo">⭐</div>
+      <p class="eyebrow">کاربر ویژه GAME SHOP</p>
+      <h2>ورود کاربر ویژه</h2>
+      <p class="login-subtitle">نام کاربری و رمز عبوری که مالک فروشگاه برای شما ساخته را وارد کنید.</p>
+      <label for="premiumLoginUser">نام کاربری</label>
+      <input id="premiumLoginUser" type="text" maxlength="40" placeholder="نام کاربری ویژه">
+      <label for="premiumLoginPass">رمز عبور</label>
+      <input id="premiumLoginPass" type="password" maxlength="80" placeholder="رمز عبور">
+      <button class="btn primary full" type="button" onclick="premiumLogin()">ورود به حساب ویژه ⭐</button>
+      <p id="premiumLoginError" class="login-error"></p>
+      <p class="switch-auth"><a href="#" onclick="openAuth(); return false;">بازگشت به ورود / ثبت‌نام</a></p>
+    </div>
+  </div>
+
+  <!-- مودال ورود مالک -->
+  <div id="ownerLoginModal" class="modal hidden" onclick="closeOwnerLogin(event)">
+    <div class="modal-card auth-card" onclick="event.stopPropagation()">
+      <button class="close" onclick="closeOwnerLogin()">×</button>
+      <div class="login-logo">🔐</div>
+      <p class="eyebrow">ورود مالک</p>
+      <h2>پنل مدیریت</h2>
+      <p class="login-subtitle">فقط مالک فروشگاه می‌تواند وارد شود.</p>
+
+      <label for="ownerUser">نام کاربری مالک</label>
+      <input id="ownerUser" type="text" maxlength="40" placeholder="نام کاربری">
+
+      <label for="ownerPass">رمز عبور مالک</label>
+      <input id="ownerPass" type="password" maxlength="40" placeholder="رمز عبور">
+
+      <button class="btn primary full" type="button" onclick="ownerLogin()">ورود به پنل مالک</button>
+      <p id="ownerLoginError" class="login-error"></p>
+    </div>
+  </div>
+
+  <!-- مودال ورود همکار -->
+  <div id="collabLoginModal" class="modal hidden" onclick="closeCollabLogin(event)">
+    <div class="modal-card auth-card" onclick="event.stopPropagation()">
+      <button class="close" onclick="closeCollabLogin()">×</button>
+      <div class="login-logo">👥</div>
+      <p class="eyebrow">ورود همکار</p>
+      <h2>پنل همکار</h2>
+      <p class="login-subtitle">با نام کاربری و رمزی که مالک برای شما ساخته وارد شوید. می‌توانید از چند گوشی/دستگاه وارد شوید.</p>
+
+      <label for="collabLoginUser">نام کاربری همکار</label>
+      <input id="collabLoginUser" type="text" maxlength="40" placeholder="نام کاربری">
+
+      <label for="collabLoginPass">رمز عبور همکار</label>
+      <input id="collabLoginPass" type="password" maxlength="40" placeholder="رمز عبور">
+
+      <button class="btn primary full" type="button" onclick="collabLogin()">ورود به پنل همکار</button>
+      <p id="collabLoginError" class="login-error"></p>
+
+      <div class="collab-share-box" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border, #333)">
+        <p class="hint" style="margin-bottom:10px">📱 اولین بار در این دستگاه؟ کد اشتراک‌گذاری که مالک فرستاده را وارد کنید تا بتوانید با همان نام کاربری و رمز وارد شوید:</p>
+        <label for="collabShareInput">کد اشتراک (GSCOLLAB-...)</label>
+        <input id="collabShareInput" type="text" placeholder="کد را اینجا بچسبانید">
+        <button class="btn ghost full" type="button" style="margin-top:8px" onclick="importCollabShareCode()">وارد کردن کد در این دستگاه</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- سبد خرید -->
+  <div id="cartModal" class="modal hidden" onclick="closeCart(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <button class="close" onclick="closeCart()">×</button>
+      <h2>🛒 سبد سفارش</h2>
+      <div id="cartItems"></div>
+      <div class="cart-total">وضعیت قیمت: <b id="cartTotal">استعلام از پشتیبانی</b></div>
+      <button id="checkoutBtn" class="btn primary full" onclick="goToCheckout()">ادامه به پرداخت 💳</button>
+      <p class="hint">برای ثبت سفارش باید وارد شده و ثبت‌نام کامل (نام + آیدی روبیکا/شماره تلفن) داشته باشی. کد اختصاصی سفارش اجباری است.</p>
+    </div>
+  </div>
+
+  <!-- صفحه پرداخت -->
+  <div id="paymentModal" class="modal hidden" onclick="closePayment(event)">
+    <div class="modal-card payment-card" onclick="event.stopPropagation()">
+      <button class="close" onclick="closePayment()">×</button>
+      <h2>💳 صفحه پرداخت</h2>
+
+      <div class="payment-section">
+        <h3>انتخاب روش پرداخت</h3>
+        <div class="payment-methods">
+          <label class="pay-method">
+            <input type="radio" name="payMethod" value="card" checked>
+            <span>کارت به کارت</span>
+          </label>
+          <label class="pay-method">
+            <input type="radio" name="payMethod" value="rubika">
+            <span>پرداخت از طریق روبیکا</span>
+          </label>
+          <label class="pay-method">
+            <input type="radio" name="payMethod" value="other">
+            <span>سایر روش‌ها (هماهنگی با پشتیبانی)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="payment-section">
+        <h3>خلاصه سفارش</h3>
+        <div id="paymentSummary"></div>
+        <div class="cart-total">وضعیت قیمت: <b id="paymentTotal">استعلام از پشتیبانی</b></div>
+      </div>
+
+      <div class="payment-section">
+        <h3>کد اختصاصی سفارش (اجباری)</h3>
+        <p class="hint">این کد برای ثبت سفارش و پیگیری الزامی است.</p>
+        <div id="orderCodeDisplay" class="order-code-box">
+          <div class="order-code-title">کد اختصاصی سفارش شما</div>
+          <div class="order-code" id="finalOrderCode">---</div>
+        </div>
+      </div>
+
+      <div class="payment-section">
+        <h3>ایمیل اعمال محصول (اجباری)</h3>
+        <p class="hint">ایمیلی که می‌خواهید محصول روی آن اعمال شود را وارد کنید. (ممکن است برای بازی‌های مختلف مثل کالاف و ای‌فوتبال متفاوت باشد)</p>
+        <label for="orderEmail">آدرس ایمیل *</label>
+        <input id="orderEmail" type="email" maxlength="80" placeholder="example@gmail.com">
+        <label for="orderEmailPass">رمز ایمیل *</label>
+        <input id="orderEmailPass" type="password" maxlength="80" placeholder="رمز عبور ایمیل">
+      </div>
+
+      <div class="payment-section" id="cardInfo">
+        <h3>اطلاعات کارت به کارت</h3>
+        <p>ابتدا قیمت را از پشتیبانی بگیر، بعد واریز کن. بدون پرداخت، سفارش ثبت نمی‌شود.</p>
+        <div class="card-box">
+          <p>شماره کارت: <strong id="cardNumberDisplay">6219-8614-2679-9507</strong>
+            <button type="button" class="copy-card-btn" onclick="copyCardNumber()" title="کپی شماره کارت">📋 کپی</button>
+          </p>
+          <p>شماره بدون خط تیره: <strong>6219861426799507</strong></p>
+          <p>بانک: <strong>بلو بانک</strong></p>
+          <p>به نام: <strong>عقیله شهباززاده</strong></p>
+        </div>
+      </div>
+
+      <div class="payment-section">
+        <h3>تأیید پرداخت (اجباری)</h3>
+        <p class="hint" style="color:#ffd666">⚠️ تا وقتی پرداخت نکرده باشی، سفارش ثبت نمی‌شود. بعد از واریز، اطلاعات زیر را پر کن.</p>
+        <label for="paymentRef">کد پیگیری / شماره پیگیری واریز *</label>
+        <input id="paymentRef" type="text" maxlength="80" placeholder="مثلاً کد پیگیری بانکی یا توضیح واریز">
+        <label class="checkbox-label" style="margin-top:8px">
+          <input type="checkbox" id="paidConfirm">
+          <span>پرداخت را انجام داده‌ام و رسید را دارم</span>
+        </label>
+        <p id="paymentError" class="login-error"></p>
+      </div>
+
+      <button class="btn primary full" onclick="confirmOrder()">✅ تأیید پرداخت و ثبت سفارش</button>
+      <a id="rubikaAfterPay" class="btn ghost full" href="https://rubika.ir/Monnomyt" target="_blank" rel="noopener">💬 ارسال رسید به روبیکا</a>
+      <a class="btn ghost full" href="https://t.me/Amir_Ali_1_8" target="_blank" rel="noopener">✈️ ارسال رسید به تلگرام</a>
+      <div id="orderDoneBox" class="order-code-box hidden"></div>
+    </div>
+  </div>
+
+  <!-- پشتیبانی شناور -->
+  <div class="support-float">
+    <a class="support-tg" href="https://t.me/Amir_Ali_1_8" target="_blank" rel="noopener" title="پشتیبانی تلگرام">✈️ تلگرام</a>
+    <a class="support-rb" href="https://rubika.ir/Monnomyt" target="_blank" rel="noopener" title="پشتیبانی روبیکا">💬 روبیکا</a>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
