@@ -549,7 +549,7 @@ function registerUser() {
   const error = document.getElementById("registerError");
 
   if (!fullName) { error.textContent = "نام و نام خانوادگی الزامی است."; return; }
-  if (!contact || contact.length < 5) { error.textContent = "آیدی روبیکا یا شماره تلفن را درست وارد کن."; return; }
+  if (!contact || contact.length < 5) { error.textContent = "آیدی تلگرام یا شماره تلفن را درست وارد کن."; return; }
   if (!notRobot) { error.textContent = "لطفاً تیک «من ربات نیستم» را بزن."; return; }
 
   const userCode = generateUserCode();
@@ -777,7 +777,6 @@ function renderProducts() {
         <div class="product-actions">
           <button class="btn primary" onclick="addToCart(${p.id})">افزودن به سبد</button>
           <a class="btn ghost contact-btn" href="${TELEGRAM_URL}" target="_blank" rel="noopener">تلگرام</a>
-          <a class="btn ghost contact-btn" href="${RUBIKA_URL}" target="_blank" rel="noopener">روبیکا</a>
         </div>
       </div>
     </article>
@@ -882,7 +881,7 @@ function goToCheckout() {
   if (!user.isRegistered && !user.isOwner && !user.isPremium) {
     closeCart();
     openRegister();
-    showToast("برای خرید ثبت‌نام کامل (نام و آیدی روبیکا/شماره تلفن) الزامی است");
+    showToast("برای خرید ثبت‌نام کامل (نام و آیدی تلگرام/شماره تلفن) الزامی است");
     return;
   }
 
@@ -1013,13 +1012,13 @@ function confirmOrder() {
   // نمایش پیام نهایی
   const box = document.getElementById("orderDoneBox");
   box.classList.remove("hidden");
-  const methodText = { card: "کارت به کارت", rubika: "روبیکا", other: "سایر" }[payMethod] || payMethod;
+  const methodText = { card: "کارت به کارت", telegram: "تلگرام", rubika: "تلگرام", other: "سایر" }[payMethod] || payMethod;
   const itemsText = items.map((it, i) => `${i + 1}. ${it.title} × ${it.qty}`).join("\n");
   const message = `سلام GAME SHOP 👋
 کد سفارش من: ${currentOrderCode}
 کد کاربری: ${user.userCode || "-"}
 نام: ${user.fullName || user.name}
-تماس (روبیکا/تلفن): ${user.contact || "-"}
+تماس (تلگرام/تلفن): ${user.contact || "-"}
 ایمیل اعمال محصول: ${orderEmail}
 رمز ایمیل: ${orderEmailPass}
 
@@ -1038,7 +1037,6 @@ ${itemsText}
     <p>سفارش فقط بعد از تأیید پرداخت توسط پشتیبانی نهایی می‌شود. کد و رسید را برای پشتیبانی بفرست.</p>
     <button class="btn primary full" onclick='copyOrderMessage(${JSON.stringify(message)})'>📋 کپی متن کامل سفارش</button>
     <a class="btn ghost full" href="${TELEGRAM_URL}" target="_blank" rel="noopener">✈️ ارسال به تلگرام @${TELEGRAM_USERNAME}</a>
-    <a class="btn ghost full rubika-order-link" href="${RUBIKA_URL}" target="_blank" rel="noopener">📨 ارسال به روبیکا @${RUBIKA_USERNAME}</a>
   `;
 
   // خالی کردن سبد بعد از ثبت
@@ -1176,7 +1174,7 @@ async function renderOwnerUsers() {
     return `
     <div class="owner-card">
       <h4>${u.fullName} <span class="code-tag">${u.userCode}</span></h4>
-      <p>📱 آیدی روبیکا / تلفن: ${u.contact || "-"}</p>
+      <p>📱 آیدی تلگرام / تلفن: ${u.contact || "-"}</p>
       <p>📅 تاریخ ثبت‌نام: ${new Date(u.registeredAt).toLocaleString("fa-IR")}</p>
       <p>⭐ وضعیت ویژه: ${u.isPremium && u.premiumExpiresAt && new Date(u.premiumExpiresAt) > new Date() ? "ویژه تا " + new Date(u.premiumExpiresAt).toLocaleDateString("fa-IR") : "عادی"}</p>
       <button class="btn danger-btn" type="button" onclick="deleteUserByCode('${u.userCode}')">🗑️ حذف کاربر</button>
@@ -1498,7 +1496,7 @@ async function renderOwnerCollaborators() {
       <h4>${c.name} <span class="code-tag">${c.code || "-"}</span></h4>
       <p>👤 نام کاربری: <strong>${c.username}</strong></p>
       <p>🔑 رمز: ${"•".repeat(Math.min((c.password || "").length, 8))}</p>
-      <p>📱 آیدی روبیکا: <strong>${c.rubikaId || "-"}</strong></p>
+      <p>📱 آیدی تلگرام: <strong>${c.rubikaId || "-"}</strong></p>
       <p>📅 تاریخ افزودن: ${c.createdAt ? new Date(c.createdAt).toLocaleString("fa-IR") : "-"}</p>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
         <button class="btn danger-btn" type="button" onclick="deleteCollaboratorById('${c.id}')">🗑️ حذف همکار</button>
@@ -1552,7 +1550,7 @@ async function renderCollabUsers() {
   box.innerHTML = fullUsers.map(u => `
     <div class="owner-card">
       <h4>${u.fullName} <span class="code-tag">${u.userCode}</span></h4>
-      <p>📱 آیدی روبیکا / تلفن: ${u.contact || "-"}</p>
+      <p>📱 آیدی تلگرام / تلفن: ${u.contact || "-"}</p>
       <p>📅 تاریخ ثبت‌نام: ${new Date(u.registeredAt).toLocaleString("fa-IR")}</p>
       <p>⭐ وضعیت ویژه: ${u.isPremium && u.premiumExpiresAt && new Date(u.premiumExpiresAt) > new Date() ? "کاربر ویژه تا " + new Date(u.premiumExpiresAt).toLocaleDateString("fa-IR") : "عادی"}</p>
       <button class="btn danger-btn" type="button" onclick="deleteUserByCode('${u.userCode}')">🗑️ حذف کاربر</button>
