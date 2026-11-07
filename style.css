@@ -115,3 +115,19 @@ footer{border-top:1px solid var(--border);padding:30px 0;color:var(--muted)}.foo
 
 @media(max-width:850px){nav{display:none}.hero-grid{grid-template-columns:1fr}.hero{padding-top:55px}.categories,.product-grid{grid-template-columns:repeat(2,1fr)}.benefits{grid-template-columns:repeat(2,1fr)}.section-head{align-items:start;flex-direction:column}.tools{width:100%}.tools input{width:100%}.tools select{width:140px}.contact-box,.footer{flex-direction:column;align-items:flex-start}.header-actions{gap:6px}.auth-btn,.owner-btn,.logout-btn{padding:8px 10px;font-size:12px}}
 @media(max-width:520px){.nav{height:64px}.cart-btn{margin-right:auto}.categories,.product-grid,.benefits{grid-template-columns:1fr}.hero-actions{flex-direction:column}.stats{gap:20px}.hero-card{padding:25px}.support-float{bottom:16px;left:12px}.support-float a{padding:10px 12px;font-size:12px}}
+
+/* برچسب پرفروش */
+.product{position:relative}
+.best-badge{position:absolute;top:10px;right:10px;z-index:2;background:linear-gradient(135deg,#ff7a18,#ff3d3d);color:#fff;font-size:12px;font-weight:800;padding:5px 11px;border-radius:20px;box-shadow:0 4px 14px rgba(255,90,40,.45)}
+.product.is-best{border-color:rgba(255,122,24,.55)}
+.product-actions .best-toggle{background:#2a2113;border:1px dashed #ff9a3d;color:#ffb866;font-size:12px;padding:8px}
+.product-actions .best-toggle:hover{background:#3a2c15}
+/* صفحات بازی‌ها */
+.game-page .lead{max-width:820px;color:var(--muted);line-height:2;margin-bottom:24px}
+.game-page .steps,.game-page .faq{max-width:820px;line-height:2}
+.game-page .faq details{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.game-page .faq summary{cursor:pointer;font-weight:800}
+.game-page .other-games{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.game-page .other-games a{background:#20283b;color:var(--secondary);padding:6px 12px;border-radius:20px;font-size:13px;text-decoration:none}
+.footer-links{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px 0;font-size:13px}
+.footer-links a{color:var(--secondary);text-decoration:none}

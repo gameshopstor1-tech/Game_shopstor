@@ -1,12 +1,26 @@
 // ==================== ثابت‌ها و داده‌ها ====================
-const RUBIKA_USERNAME = "Monnomyt";
-const RUBIKA_URL = "https://rubika.ir/Monnomyt";
 const TELEGRAM_USERNAME = "Amir_Ali_1_8";
 const TELEGRAM_URL = "https://t.me/Amir_Ali_1_8";
 
 // اطلاعات ورود مالک (فقط مالک با این مشخصات وارد پنل می‌شود)
 const OWNER_USER = "admin";
-const OWNER_PASS = "gsowner1405";
+// رمز مالک دیگر به صورت متن ساده در کد نیست؛ فقط هش SHA-256 آن ذخیره شده.
+// برای تغییر رمز: در کنسول مرورگر (F12) این را اجرا کن و خروجی را اینجا بگذار:
+// crypto.subtle.digest("SHA-256", new TextEncoder().encode("رمز-جدید")).then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")))
+const OWNER_PASS_HASH = "a8fb4d778143d9dbfe656caa1ea5015a95e48fbf296a779571651376ee6ed769";
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+// جلوگیری از XSS: هر متن واردشده توسط کاربر قبل از قرار گرفتن در HTML باید escape شود
+function esc(v) {
+  return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+// برای مقدارهایی که داخل onclick="fn('...')" می‌روند
+function jsArg(v) {
+  return "decodeURIComponent('" + encodeURIComponent(String(v ?? "")).replace(/'/g, "%27") + "')";
+}
 
 // ==================== اتصال به Supabase ====================
 const SUPABASE_URL = "https://sigfvddetklihejekhib.supabase.co";
@@ -461,6 +475,7 @@ function updateAuthUI() {
   // مشاهده فروشگاه برای همه آزاد است؛ فقط ثبت سفارش نیاز به ثبت‌نام دارد.
   document.querySelector("header.header")?.classList.remove("hidden");
   document.querySelector("footer")?.classList.remove("hidden");
+  if (typeof renderProducts === "function" && document.getElementById("productGrid")) renderProducts();
 }
 
 function openAuth() {
@@ -609,12 +624,13 @@ function openPremiumLogin() {
   document.getElementById("premiumLoginModal")?.classList.remove("hidden");
   document.getElementById("premiumLoginError").textContent = "";
 }
-function ownerLogin() {
+async function ownerLogin() {
   const user = document.getElementById("ownerUser").value.trim();
   const pass = document.getElementById("ownerPass").value;
   const error = document.getElementById("ownerLoginError");
 
-  if (user === OWNER_USER && pass === OWNER_PASS) {
+  const passHash = await sha256Hex(pass);
+  if (user === OWNER_USER && passHash === OWNER_PASS_HASH) {
     setOwnerLoggedIn(true);
     setCollabLoggedIn(false);
     setCurrentCollab(null);
@@ -755,6 +771,42 @@ function categoryLabel(game) {
   const labels = {all:"همه",buyaccount:"خرید اکانت بازی",efootball:"eFootball",cod:"Call of Duty",freefire:"Free Fire",pubg:"PUBG",clash:"Clash of Clans",clashroyale:"Clash Royale",telegram:"Telegram",fcmobile:"FC Mobile",roblox:"Roblox",pesarkhande:"پسرخوانده",giftcard:"گیفت کارت",brawlstars:"Brawl Stars",stumbleguys:"Stumble Guys",dls:"Dream League Soccer",specialaccount:"اکانت ویژه"};
   return labels[game] || game;
 }
+// ==================== برچسب پرفروش (فقط مالک تغییر می‌دهد) ====================
+// ذخیره در Supabase (جدول bestsellers) تا برای همه بازدیدکننده‌ها نمایش داده شود.
+// اگر جدول هنوز ساخته نشده باشد، موقتاً فقط در همین مرورگر ذخیره می‌شود.
+let bestsellerIds = new Set(JSON.parse(localStorage.getItem("gameShopBestsellers") || "[]"));
+let bestsellersInCloud = false;
+
+async function loadBestsellers() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/bestsellers?select=product_id`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+    });
+    if (!res.ok) return;
+    const rows = await res.json();
+    bestsellersInCloud = true;
+    bestsellerIds = new Set(rows.map(r => Number(r.product_id)));
+    localStorage.setItem("gameShopBestsellers", JSON.stringify([...bestsellerIds]));
+    renderProducts();
+  } catch (e) { console.error("bestsellers load error", e); }
+}
+
+async function toggleBestseller(id) {
+  if (!isOwnerLoggedIn()) { showToast("فقط مالک می‌تواند برچسب پرفروش بگذارد"); return; }
+  const isOn = bestsellerIds.has(id);
+  let ok = true;
+  if (bestsellersInCloud) {
+    ok = isOn
+      ? await sbDelete("bestsellers", `product_id=eq.${id}`)
+      : !!(await sbInsert("bestsellers", { product_id: id }));
+  }
+  if (!ok) { showToast("خطا در ذخیره برچسب پرفروش"); return; }
+  if (isOn) bestsellerIds.delete(id); else bestsellerIds.add(id);
+  localStorage.setItem("gameShopBestsellers", JSON.stringify([...bestsellerIds]));
+  renderProducts();
+  showToast(isOn ? "برچسب پرفروش برداشته شد" : "🔥 برچسب پرفروش گذاشته شد" + (bestsellersInCloud ? "" : " (فقط روی این دستگاه؛ جدول bestsellers را در Supabase بساز)"));
+}
+
 function renderProducts() {
   const rawQuery = document.getElementById("search").value.trim();
   let list = products
@@ -767,7 +819,8 @@ function renderProducts() {
   if (sort === "high") list.sort((a, b) => b.price - a.price);
 
   document.getElementById("productGrid").innerHTML = list.length ? list.map(p => `
-    <article class="product">
+    <article class="product${bestsellerIds.has(p.id) ? " is-best" : ""}">
+      ${bestsellerIds.has(p.id) ? `<span class="best-badge">🔥 پرفروش</span>` : ""}
       <div class="product-img">${p.icon}</div>
       <div class="product-body">
         <span class="tag">${p.gameName}</span>
@@ -777,6 +830,7 @@ function renderProducts() {
         <div class="product-actions">
           <button class="btn primary" onclick="addToCart(${p.id})">افزودن به سبد</button>
           <a class="btn ghost contact-btn" href="${TELEGRAM_URL}" target="_blank" rel="noopener">تلگرام</a>
+          ${isOwnerLoggedIn() ? `<button class="btn best-toggle" type="button" onclick="toggleBestseller(${p.id})">${bestsellerIds.has(p.id) ? "❌ برداشتن برچسب پرفروش" : "🔥 علامت‌گذاری به‌عنوان پرفروش"}</button>` : ""}
         </div>
       </div>
     </article>
@@ -786,8 +840,9 @@ function renderProducts() {
 function filterProducts(filter) {
   currentFilter = filter;
   document.querySelectorAll("#filterBar button").forEach(b => b.classList.remove("active"));
-  const labels = { all: "همه", efootball: "eFootball", cod: "Call of Duty", freefire: "Free Fire", pubg: "PUBG", clash: "Clash of Clans" };
-  document.querySelectorAll("#filterBar button").forEach(b => { if (b.textContent === labels[filter]) b.classList.add("active"); });
+  document.querySelectorAll("#filterBar button").forEach(b => {
+    if ((b.getAttribute("onclick") || "") === `filterProducts('${filter}')`) b.classList.add("active");
+  });
   renderProducts();
   document.getElementById("products").scrollIntoView({ behavior: "smooth" });
 }
@@ -837,7 +892,7 @@ function renderCart() {
   } else {
     box.innerHTML = cart.map(p => `
       <div class="cart-row">
-        <span>${p.icon} ${p.title}</span>
+        <span>${p.icon} ${esc(p.title)}</span>
         <div class="qty-controls">
           <button onclick="changeQty(${p.id}, -1)">−</button>
           <span>${p.qty}</span>
@@ -900,7 +955,7 @@ function openPayment() {
 
   document.getElementById("paymentSummary").innerHTML = cart.map(p => `
     <div class="cart-row">
-      <span>${p.icon} ${p.title} × ${p.qty}</span>
+      <span>${p.icon} ${esc(p.title)} × ${p.qty}</span>
       <span style="color:var(--secondary);font-size:13px">استعلام قیمت</span>
     </div>
   `).join("");
@@ -1035,7 +1090,7 @@ ${itemsText}
     <div class="order-code-title">✅ سفارش ثبت شد (منتظر تأیید پرداخت)</div>
     <div class="order-code">${currentOrderCode}</div>
     <p>سفارش فقط بعد از تأیید پرداخت توسط پشتیبانی نهایی می‌شود. کد و رسید را برای پشتیبانی بفرست.</p>
-    <button class="btn primary full" onclick='copyOrderMessage(${JSON.stringify(message)})'>📋 کپی متن کامل سفارش</button>
+    <button class="btn primary full" data-msg="${esc(message)}" onclick="copyOrderMessage(this.dataset.msg)">📋 کپی متن کامل سفارش</button>
     <a class="btn ghost full" href="${TELEGRAM_URL}" target="_blank" rel="noopener">✈️ ارسال به تلگرام @${TELEGRAM_USERNAME}</a>
   `;
 
@@ -1048,7 +1103,7 @@ ${itemsText}
 function notifyOwnerNewOrder(order) {
   if (!("Notification" in window)) return;
   const title = "سفارش جدید در GAME SHOP";
-  const body = `کد: ${order.orderCode} | ${order.userName} | ${money(order.total)}`;
+  const body = `کد: ${esc(order.orderCode)} | ${esc(order.userName)} | ${money(order.total)}`;
   if (Notification.permission === "granted") {
     new Notification(title, { body, dir: "rtl" });
   } else if (Notification.permission !== "denied") {
@@ -1098,9 +1153,9 @@ async function trackOrder() {
     return;
   }
 
-  const itemsHtml = order.items.map(it => `<div>• ${it.title} × ${it.qty} — ${money(it.total)}</div>`).join("");
+  const itemsHtml = order.items.map(it => `<div>• ${esc(it.title)} × ${esc(it.qty)} — ${money(it.total)}</div>`).join("");
   result.innerHTML = `
-    <h4>کد سفارش: <span class="code-tag">${order.orderCode}</span></h4>
+    <h4>کد سفارش: <span class="code-tag">${esc(order.orderCode)}</span></h4>
     <p>وضعیت: <strong>${({
       "pending":"در انتظار تأیید",
       "paid":"در انتظار تأیید",
@@ -1109,11 +1164,11 @@ async function trackOrder() {
       "delivered":"تحویل داده شده",
       "تحویل شده":"تحویل داده شده"
     }[order.status] || order.status)}</strong></p>
-    <p>نام: ${order.userName}</p>
-    <p>کد کاربری: ${order.userCode || "-"}</p>
-    <p>تماس: ${order.contact || "-"}</p>
-    <p>ایمیل اعمال: ${order.email || "-"}</p>
-    <p>روش پرداخت: ${order.payMethod}</p>
+    <p>نام: ${esc(order.userName)}</p>
+    <p>کد کاربری: ${esc(order.userCode || "-")}</p>
+    <p>تماس: ${esc(order.contact || "-")}</p>
+    <p>ایمیل اعمال: ${esc(order.email || "-")}</p>
+    <p>روش پرداخت: ${esc(order.payMethod)}</p>
     <p>تاریخ: ${new Date(order.createdAt).toLocaleString("fa-IR")}</p>
     <div style="margin-top:10px">${itemsHtml}</div>
     <p style="margin-top:10px;font-weight:800">مجموع: ${money(order.total)}</p>
@@ -1173,11 +1228,11 @@ async function renderOwnerUsers() {
   box.innerHTML = fullUsers.map((u) => {
     return `
     <div class="owner-card">
-      <h4>${u.fullName} <span class="code-tag">${u.userCode}</span></h4>
-      <p>📱 آیدی تلگرام / تلفن: ${u.contact || "-"}</p>
+      <h4>${esc(u.fullName)} <span class="code-tag">${esc(u.userCode)}</span></h4>
+      <p>📱 آیدی تلگرام / تلفن: ${esc(u.contact || "-")}</p>
       <p>📅 تاریخ ثبت‌نام: ${new Date(u.registeredAt).toLocaleString("fa-IR")}</p>
       <p>⭐ وضعیت ویژه: ${u.isPremium && u.premiumExpiresAt && new Date(u.premiumExpiresAt) > new Date() ? "ویژه تا " + new Date(u.premiumExpiresAt).toLocaleDateString("fa-IR") : "عادی"}</p>
-      <button class="btn danger-btn" type="button" onclick="deleteUserByCode('${u.userCode}')">🗑️ حذف کاربر</button>
+      <button class="btn danger-btn" type="button" onclick="deleteUserByCode('${esc(u.userCode)}')">🗑️ حذف کاربر</button>
     </div>
   `;
   }).join("");
@@ -1218,39 +1273,39 @@ async function renderOwnerOrders() {
   };
 
   box.innerHTML = orders.map(o => {
-    const items = (o.items || []).map(it => `${it.title} ×${it.qty}`).join(" | ");
+    const items = (o.items || []).map(it => `${esc(it.title)} ×${esc(it.qty)}`).join(" | ");
     const currentStatus = statusLabel[o.status] || "در انتظار تأیید";
     const isDelivered = currentStatus === "تحویل داده شده";
 
     return `
       <div class="owner-card">
-        <h4>کد سفارش: <span class="code-tag">${o.orderCode}</span></h4>
-        <p>👤 ${o.userName} | کد کاربر: ${o.userCode || "-"}</p>
-        <p>📱 تماس: ${o.contact || "-"}</p>
-        <p>📧 ایمیل اعمال: ${o.email || "-"}</p>
-        <p>🔑 رمز ایمیل: ${o.emailPass || "-"}</p>
+        <h4>کد سفارش: <span class="code-tag">${esc(o.orderCode)}</span></h4>
+        <p>👤 ${esc(o.userName)} | کد کاربر: ${esc(o.userCode || "-")}</p>
+        <p>📱 تماس: ${esc(o.contact || "-")}</p>
+        <p>📧 ایمیل اعمال: ${esc(o.email || "-")}</p>
+        <p>🔑 رمز ایمیل: ${esc(o.emailPass || "-")}</p>
         <p>🛒 ${items}</p>
-        <p>💰 ${money(o.total)} | پرداخت: ${o.payMethod}</p>
+        <p>💰 ${money(o.total)} | پرداخت: ${esc(o.payMethod)}</p>
         <p>📌 وضعیت: <strong>${currentStatus}</strong></p>
         <p>📅 ${new Date(o.createdAt).toLocaleString("fa-IR")}</p>
 
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
           ${!isDelivered ? `
             <button class="btn primary" type="button"
-              onclick="updateOwnerOrderStatus('${o.id}', 'در انتظار تأیید')">
+              onclick="updateOwnerOrderStatus(${esc(jsArg(o.id))}, 'در انتظار تأیید')">
               ⏳ در انتظار تأیید
             </button>
             <button class="btn primary" type="button"
-              onclick="updateOwnerOrderStatus('${o.id}', 'تأیید شده و درحال اعمال محصول')">
+              onclick="updateOwnerOrderStatus(${esc(jsArg(o.id))}, 'تأیید شده و درحال اعمال محصول')">
               ⚙️ تأیید شده و درحال اعمال محصول
             </button>
             <button class="btn danger-btn" type="button"
-              onclick="updateOwnerOrderStatus('${o.id}', 'سفارش لغو شده')">
+              onclick="updateOwnerOrderStatus(${esc(jsArg(o.id))}, 'سفارش لغو شده')">
               ❌ سفارش لغو شده
             </button>
             ${currentStatus !== "سفارش لغو شده" ? `
               <button class="btn primary" type="button"
-                onclick="updateOwnerOrderStatus('${o.id}', 'تحویل داده شده')">
+                onclick="updateOwnerOrderStatus(${esc(jsArg(o.id))}, 'تحویل داده شده')">
                 📦 تحویل داده شد
               </button>
             ` : ""}
@@ -1322,11 +1377,11 @@ async function renderOwnerPremiumUsers() {
     const active = isPremiumActive(p);
     const remaining = Math.max(0, Math.ceil((new Date(p.expiresAt)-Date.now())/86400000));
     return `<div class="owner-card">
-      <h4>⭐ ${p.name} <span class="code-tag">${active ? "فعال" : "منقضی"}</span></h4>
-      <p>👤 نام کاربری: <strong>${p.username}</strong></p>
-      <p>🔑 رمز عبور: <strong>${p.password}</strong></p>
+      <h4>⭐ ${esc(p.name)} <span class="code-tag">${active ? "فعال" : "منقضی"}</span></h4>
+      <p>👤 نام کاربری: <strong>${esc(p.username)}</strong></p>
+      <p>🔑 رمز عبور: <strong>${esc(p.password)}</strong></p>
       <p>⏳ اعتبار تا: ${new Date(p.expiresAt).toLocaleString("fa-IR")} ${active ? `(${remaining} روز باقی‌مانده)` : ""}</p>
-      <button class="btn danger-btn" type="button" onclick="deletePremiumUserById('${p.id}')">🗑️ حذف کاربر ویژه</button>
+      <button class="btn danger-btn" type="button" onclick="deletePremiumUserById(${esc(jsArg(p.id))})">🗑️ حذف کاربر ویژه</button>
     </div>`;
   }).join("");
 }
@@ -1493,13 +1548,13 @@ async function renderOwnerCollaborators() {
   box.innerHTML = list.map((c) => {
     return `
     <div class="owner-card">
-      <h4>${c.name} <span class="code-tag">${c.code || "-"}</span></h4>
-      <p>👤 نام کاربری: <strong>${c.username}</strong></p>
+      <h4>${esc(c.name)} <span class="code-tag">${esc(c.code || "-")}</span></h4>
+      <p>👤 نام کاربری: <strong>${esc(c.username)}</strong></p>
       <p>🔑 رمز: ${"•".repeat(Math.min((c.password || "").length, 8))}</p>
-      <p>📱 آیدی تلگرام: <strong>${c.rubikaId || "-"}</strong></p>
+      <p>📱 آیدی تلگرام: <strong>${esc(c.rubikaId || "-")}</strong></p>
       <p>📅 تاریخ افزودن: ${c.createdAt ? new Date(c.createdAt).toLocaleString("fa-IR") : "-"}</p>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
-        <button class="btn danger-btn" type="button" onclick="deleteCollaboratorById('${c.id}')">🗑️ حذف همکار</button>
+        <button class="btn danger-btn" type="button" onclick="deleteCollaboratorById(${esc(jsArg(c.id))})">🗑️ حذف همکار</button>
       </div>
     </div>
   `;
@@ -1549,11 +1604,11 @@ async function renderCollabUsers() {
   }
   box.innerHTML = fullUsers.map(u => `
     <div class="owner-card">
-      <h4>${u.fullName} <span class="code-tag">${u.userCode}</span></h4>
-      <p>📱 آیدی تلگرام / تلفن: ${u.contact || "-"}</p>
+      <h4>${esc(u.fullName)} <span class="code-tag">${esc(u.userCode)}</span></h4>
+      <p>📱 آیدی تلگرام / تلفن: ${esc(u.contact || "-")}</p>
       <p>📅 تاریخ ثبت‌نام: ${new Date(u.registeredAt).toLocaleString("fa-IR")}</p>
       <p>⭐ وضعیت ویژه: ${u.isPremium && u.premiumExpiresAt && new Date(u.premiumExpiresAt) > new Date() ? "کاربر ویژه تا " + new Date(u.premiumExpiresAt).toLocaleDateString("fa-IR") : "عادی"}</p>
-      <button class="btn danger-btn" type="button" onclick="deleteUserByCode('${u.userCode}')">🗑️ حذف کاربر</button>
+      <button class="btn danger-btn" type="button" onclick="deleteUserByCode('${esc(u.userCode)}')">🗑️ حذف کاربر</button>
     </div>
   `).join("");
 }
@@ -1584,19 +1639,19 @@ async function renderCollabOrders() {
     return;
   }
   box.innerHTML = orders.map(o => {
-    const items = (o.items || []).map(it => `${it.title} ×${it.qty}`).join(" | ");
+    const items = (o.items || []).map(it => `${esc(it.title)} ×${esc(it.qty)}`).join(" | ");
     const isDelivered = (o.status || "").includes("تحویل") || o.status === "delivered";
     const deliverBtn = isDelivered
       ? `<p style="color:var(--success, #22c55e);font-weight:700">✅ تحویل شده</p>`
-      : `<button class="btn primary" type="button" onclick="deliverOrderByCollab('${o.id}')">📦 تحویل به مشتری</button>`;
+      : `<button class="btn primary" type="button" onclick="deliverOrderByCollab(${esc(jsArg(o.id))})">📦 تحویل به مشتری</button>`;
     return `
       <div class="owner-card">
-        <h4>کد سفارش: <span class="code-tag">${o.orderCode}</span></h4>
-        <p>👤 ${o.userName} | کد کاربر: ${o.userCode || "-"}</p>
-        <p>📱 تماس: ${o.contact || "-"}</p>
+        <h4>کد سفارش: <span class="code-tag">${esc(o.orderCode)}</span></h4>
+        <p>👤 ${esc(o.userName)} | کد کاربر: ${esc(o.userCode || "-")}</p>
+        <p>📱 تماس: ${esc(o.contact || "-")}</p>
         <p>🛒 ${items}</p>
-        <p>💰 ${money(o.total)} | پرداخت: ${o.payMethod}</p>
-        <p>📌 وضعیت: ${o.status}</p>
+        <p>💰 ${money(o.total)} | پرداخت: ${esc(o.payMethod)}</p>
+        <p>📌 وضعیت: ${esc(o.status)}</p>
         <p>📅 ${new Date(o.createdAt).toLocaleString("fa-IR")}</p>
         <div style="margin-top:10px">${deliverBtn}</div>
       </div>
@@ -1632,6 +1687,13 @@ document.getElementById("cartCount").textContent = new Intl.NumberFormat("fa-IR"
 renderProducts();
 renderCart();
 updateAuthUI();
+loadBestsellers();
 // فروشگاه برای کاربر مهمان هم نمایش داده می‌شود؛ ثبت‌نام فقط هنگام ثبت سفارش الزامی است.
 document.getElementById("mainContent").classList.remove("hidden");
 document.getElementById("authModal").classList.add("hidden");
+
+// باز شدن مستقیم یک دسته از صفحات بازی‌ها: index.html?game=cod
+(function () {
+  const g = new URLSearchParams(location.search).get("game");
+  if (g && products.some(p => p.game === g)) filterProducts(g);
+})();

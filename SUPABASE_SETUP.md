@@ -27,7 +27,7 @@
 این دو مقدار را در فایل `script.js` فرانت‌اند قرار می‌دهید.
 
 ## مرحله ۴: (اختیاری) ساخت مالک پیش‌فرض
-اگر می‌خواهید همان نام کاربری `admin` و رمز `gsowner1405` از قبل وجود داشته باشد:
+اگر می‌خواهید همان نام کاربری `admin` و رمز `[رمز مالک - اینجا نوشته نمی‌شود]` از قبل وجود داشته باشد:
 
 1. در SQL Editor این کد را اجرا کنید:
 
@@ -36,7 +36,7 @@ insert into public.collaborators (name, username, password_hash, code, role)
 values (
   'مالک فروشگاه',
   'admin',
-  crypt('gsowner1405', gen_salt('bf')),
+  crypt('[رمز مالک - اینجا نوشته نمی‌شود]', gen_salt('bf')),
   'COL-OWNER',
   'owner'
 )
